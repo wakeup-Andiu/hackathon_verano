@@ -1,11 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap');
 @import "tailwindcss";
 
 :root {
   --color-cream: #fdfbcf;
-  --color-green-light: #a3d563;
-  --color-green: #42c987;
-  --color-teal: #4a9d9f;
-  --color-blue-dark: #385271;
+  --color-green-light: #197bf2;
+  --color-green: #fa00a1;
+  --color-teal: #7fc985;
+  --color-blue-dark: #000000;
   --background: var(--color-cream);
   --foreground: var(--color-blue-dark);
 }
@@ -27,5 +28,5 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Quicksand', 'Nunito', 'Poppins', 'M PLUS Rounded 1c', Arial, sans-serif;
 }
