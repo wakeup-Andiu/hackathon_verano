@@ -2,6 +2,10 @@
 import { useState } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
+// La sesión de usuario se mantendrá abierta de forma persistente hasta que el usuario cierre sesión manualmente.
+// Supabase Auth Helpers usan cookies persistentes por defecto.
+// No se hace signOut automático en ningún flujo de este archivo.
+
 export default function AuthPage() {
   const supabase = createClientComponentClient();
   const [email, setEmail] = useState("");

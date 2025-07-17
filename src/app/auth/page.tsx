@@ -15,8 +15,17 @@ export default function AuthPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) setError(error.message);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        setError("Error al iniciar sesión: " + error.message);
+      } else {
+        // Redirige a visualizar perfil si login exitoso
+        router.push("/perfil");
+      }
+    } catch (err: any) {
+      setError("Error inesperado al iniciar sesión: " + err.message);
+    }
     setLoading(false);
   };
 
@@ -24,24 +33,35 @@ export default function AuthPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) setError(error.message);
-    else {
-      // Guarda el usuario en la tabla users
-      const userId = data?.user?.id;
-      if (userId) {
-        await supabase.from('users').insert({ auth_user_id: userId, email });
+    try {
+      const { data, error } = await supabase.auth.signUp({ email, password });
+      if (error) {
+        setError("Error al registrarse: " + error.message);
+      } else {
+        // Guarda el usuario en la tabla users
+        const userId = data?.user?.id;
+        if (userId) {
+          const { error: insertError } = await supabase.from('users').insert({ auth_user_id: userId, email });
+          if (insertError) {
+            setError("Usuario creado, pero error al guardar en la base de datos: " + insertError.message);
+            setLoading(false);
+            return;
+          }
+        }
+        router.push("/perfil/editar");
       }
-      router.push("/auth/success");
+    } catch (err: any) {
+      setError("Error inesperado al registrarse: " + err.message);
     }
     setLoading(false);
   };
 
 
+
   return (
     <div className="max-w-md mx-auto mt-10 p-6 rounded shadow" style={{ background: "var(--color-cream)", color: "var(--color-blue-dark)" }}>
       <h2 className="text-2xl font-bold mb-4 text-center" style={{ color: "var(--color-green)" }}>SkillLink - Iniciar sesión / Registrarse</h2>
-      <form className="flex flex-col gap-3">
+      <form className="flex flex-col gap-3" onSubmit={handleSignIn}>
         <input
           type="email"
           placeholder="Correo electrónico"
@@ -60,7 +80,7 @@ export default function AuthPage() {
         />
         {error && <div style={{ color: "#e53935" }}>{error}</div>}
         <button
-          onClick={handleSignIn}
+          type="submit"
           className="px-4 py-2 rounded font-semibold"
           style={{ background: "var(--color-green)", color: "#fff", border: "none" }}
           disabled={loading}
